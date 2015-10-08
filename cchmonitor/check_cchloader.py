@@ -98,6 +98,5 @@ for name in NAMES:
     results.append(run_test(name, cch_stats.get_n_entries,[name, today_sof]))
     results.append(run_test(name, cch_stats.get_storage,[name]))
     results.append(run_test(name, cch_stats.get_providers,[name]))
-    results.append(run_test(cch_name, cch_stats.get_update_providers,[cch_name]))
     results.append(run_test(name, cch_stats.get_update_providers,[name]))
 push_test('CCH loader status %s' % datetime.datetime.now(), results)
