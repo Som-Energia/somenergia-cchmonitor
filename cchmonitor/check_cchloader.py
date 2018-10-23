@@ -71,14 +71,19 @@ class CCHStats(object):
         return [{'provider': provider['name'], 'name': name, 'date': provider[cch_to_name[name]]} 
             for provider in providers if not parse(provider[cch_to_name[name]]).date() == datetime.datetime.today().date()]
 
-db = MongoClient('mongodb://{username}:{password}@{hostname}/{dbname}'.format(**
-                 {
-                 'username': config['mongodb']['username'],
-                 'password': config['mongodb']['password'],
-                 'hostname': config['mongodb']['hostname'],
-                 'port': config['mongodb']['port'],
-                 'dbname': config['mongodb']['dbname']
-                  }))
+
+conn_str = 'mongodb://{username}:{password}@{hostname}/{dbname}?replicaSet={replica}' \
+    if 'replica' in config['mongodb'] \
+    else 'mongodb://{username}:{password}@{hostname}/{dbname}'
+
+db = MongoClient(conn_str.format(
+    **{'username': config['mongodb']['username'],
+       'password': config['mongodb']['password'],
+       'hostname': config['mongodb']['hostname'],
+       'port': config['mongodb']['port'],
+       'dbname': config['mongodb']['dbname'],
+       'replica': config['mongodb'].get('replica'),
+}))
 
 O = OOOP(dbname=config['erp']['dbname'],
          user=config['erp']['username'],
