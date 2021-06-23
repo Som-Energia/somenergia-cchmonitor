@@ -69,7 +69,8 @@ class CCHStats(object):
             'cchval': 'p5d_date'}
         providers = self.get_providers(name)
         return [{'provider': provider['name'], 'name': name, 'date': provider[cch_to_name[name]]} 
-            for provider in providers if not parse(provider[cch_to_name[name]]).date() == datetime.datetime.today().date()]
+            for provider in providers
+            if provider[cch_to_name[name]] and not parse(provider[cch_to_name[name]]).date() == datetime.datetime.today().date()]
 
 
 conn_str = 'mongodb://{username}:{password}@{hostname}/{dbname}?replicaSet={replica}' \
