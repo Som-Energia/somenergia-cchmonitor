@@ -23,7 +23,7 @@ def size_to_human(size):
 
 
 class CCHStats(object):
-    names = ['cchfact','cchval', 'f1', 'p1', 'cch_autocons', 'cch_gennetabeta']
+    names = NAMES
     def __init__(self, db, erp):
         self.db = db
         self.erp = erp
