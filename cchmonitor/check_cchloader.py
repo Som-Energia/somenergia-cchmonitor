@@ -8,7 +8,7 @@ from ooop import OOOP
 from check import run_test, push_test
 from config import config
 
-NAMES = ['cchfact','cchval']
+NAMES = ['cchfact','cchval', 'f1', 'p1', 'cch_autocons', 'cch_gennetabeta']
 
 
 def size_to_human(size):
@@ -23,7 +23,7 @@ def size_to_human(size):
 
 
 class CCHStats(object):
-    names = ['cchfact', 'cchval']
+    names = NAMES
     def __init__(self, db, erp):
         self.db = db
         self.erp = erp
@@ -55,6 +55,10 @@ class CCHStats(object):
         cch_to_name = {
             'cchfact': ['f5d_enabled', 'f5d_date'],
             'cchval': ['p5d_enabled', 'p5d_date'],
+            'f1': ['f1_enabled', 'f1_date'],
+            'p1': ['p1_enabled', 'p1_date'],
+            'cch_autocons': ['a5d_enabled','a5d_date'],
+            'cch_gennetabeta': ['b5d_enabled', 'b5d_date']
         }
         fields_to_read = ['name', 'distribuidora', 'enabled']
         fields_to_read += cch_to_name[name]
@@ -66,9 +70,14 @@ class CCHStats(object):
     def get_update_providers(self, name):
         cch_to_name = {
             'cchfact': 'f5d_date',
-            'cchval': 'p5d_date'}
+            'cchval': 'p5d_date',
+            'f1': 'f1_date',
+            'p1': 'p1_date',
+            'cch_autocons': 'a5d_date',
+            'cch_gennetabeta': 'b5d_date'
+        }
         providers = self.get_providers(name)
-        return [{'provider': provider['name'], 'name': name, 'date': provider[cch_to_name[name]]} 
+        return [{'provider': provider['name'], 'name': name, 'date': provider[cch_to_name[name]]}
             for provider in providers
             if provider[cch_to_name[name]] and not parse(provider[cch_to_name[name]]).date() == datetime.datetime.today().date()]
 
