@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from ooop import OOOP
 
 from check import run_test, push_test
-from config import config
+import dbconfig
 
 NAMES = ['cchfact','cchval', 'f1', 'p1', 'cch_autocons', 'cch_gennetabeta']
 
@@ -45,10 +45,10 @@ class CCHStats(object):
 
         stats = self.db.somenergia.command('collstats', tg_name)
         return {
-            'avgObjSize': size_to_human(stats['avgObjSize']),
-            'count': stats['count'],
-            'size': size_to_human(stats['size']),
-            'storageSize': size_to_human(stats['storageSize'])
+            'avgObjSize': size_to_human(stats['avgObjSize']) if stats.get('avgObjSize') else 'ns/nc',
+            'count': stats['count'] if stats.get('count') else 'ns/nc',
+            'size': size_to_human(stats['size'])  if stats.get('size') else 'ns/nc',
+            'storageSize': size_to_human(stats['storageSize'])  if stats.get('storageSize') else 'ns/nc'
         }
 
     def get_providers(self, name):
@@ -82,24 +82,9 @@ class CCHStats(object):
             if provider[cch_to_name[name]] and not parse(provider[cch_to_name[name]]).date() == datetime.datetime.today().date()]
 
 
-conn_str = 'mongodb://{username}:{password}@{hostname}/{dbname}?replicaSet={replica}' \
-    if 'replica' in config['mongodb'] \
-    else 'mongodb://{username}:{password}@{hostname}/{dbname}'
+db = MongoClient(dbconfig.mongodb)
 
-db = MongoClient(conn_str.format(
-    **{'username': config['mongodb']['username'],
-       'password': config['mongodb']['password'],
-       'hostname': config['mongodb']['hostname'],
-       'port': config['mongodb']['port'],
-       'dbname': config['mongodb']['dbname'],
-       'replica': config['mongodb'].get('replica'),
-}))
-
-O = OOOP(dbname=config['erp']['dbname'],
-         user=config['erp']['username'],
-         pwd=config['erp']['password'],
-         port=config['erp']['port'],
-         uri=config['erp']['hostname'])
+O = OOOP(**dbconfig.ooop)
 
 cch_stats = CCHStats(db, O)
 
